@@ -813,44 +813,46 @@ var Fullpage = function (_React$Component) {
           intent = _ref.intent,
           startEvent = _ref.startEvent;
 
-      var s = this.state;
-      var _ss = this.ss,
-          ss = _ss === undefined ? ssStub() : _ss;
+      if (!this.props.locked) {
+        var s = this.state;
+        var _ss = this.ss,
+            ss = _ss === undefined ? ssStub() : _ss;
 
 
-      if (s.scrollPending) {
-        ss.flush();
-        return ss.listen();
-      }
-
-      var dir = __WEBPACK_IMPORTED_MODULE_4__utils__["e" /* INTENT_MAP */][direction];
-
-      // at this point we are dedicating
-      if (direction === 'VERTICAL') {
-        return this.onVerticalScroll(dir[intent], startEvent);
-      }
-
-      var path = startEvent.path || startEvent.composedPath && startEvent.composedPath();
-
-      if (!path) {
-        var polyFillPath = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils__["f" /* composedPath */])(startEvent.target);
-        path = polyFillPath;
-      }
-
-      var isHorizontal = path.find(function (p) {
-        if (!p.dataset) {
-          return false;
+        if (s.scrollPending) {
+          ss.flush();
+          return ss.listen();
         }
 
-        return p.dataset.slide === 'HorizontalSlider';
-      });
+        var dir = __WEBPACK_IMPORTED_MODULE_4__utils__["e" /* INTENT_MAP */][direction];
 
-      if (!isHorizontal) {
-        ss.flush();
-        return ss.listen();
+        // at this point we are dedicating
+        if (direction === 'VERTICAL') {
+          return this.onVerticalScroll(dir[intent], startEvent);
+        }
+
+        var path = startEvent.path || startEvent.composedPath && startEvent.composedPath();
+
+        if (!path) {
+          var polyFillPath = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils__["f" /* composedPath */])(startEvent.target);
+          path = polyFillPath;
+        }
+
+        var isHorizontal = path.find(function (p) {
+          if (!p.dataset) {
+            return false;
+          }
+
+          return p.dataset.slide === 'HorizontalSlider';
+        });
+
+        if (!isHorizontal) {
+          ss.flush();
+          return ss.listen();
+        }
+
+        this.onHorizontalScroll(dir[intent], isHorizontal);
       }
-
-      this.onHorizontalScroll(dir[intent], isHorizontal);
     }
   }, {
     key: 'onVerticalScroll',
@@ -1183,30 +1185,27 @@ var Fullpage = function (_React$Component) {
           state = _fp2.state,
           name = _fp2.name,
           verticalRoot = _fp2.verticalRoot;
-
-      if (!props.locked) {
-        var activeSlide = state.activeSlide,
-            _window = state.window;
+      var activeSlide = state.activeSlide,
+          window = state.window;
 
 
-        var eligible = isEligible(idx, props, state);
+      var eligible = isEligible(idx, props, state);
 
-        if (!eligible) {
-          return;
-        }
-
-        var newState = {
-          activeSlide: idx,
-          lastActive: activeSlide
-        };
-
-        var to = idx * _window.innerHeight;
-
-        _fp.setState({ scrollPending: true }, function () {
-          _fp.onSlideChangeStart(name, props, state, newState);
-          _fp.handleScroll(verticalRoot, 'scrollTop', to, newState, name);
-        });
+      if (!eligible) {
+        return;
       }
+
+      var newState = {
+        activeSlide: idx,
+        lastActive: activeSlide
+      };
+
+      var to = idx * window.innerHeight;
+
+      _fp.setState({ scrollPending: true }, function () {
+        _fp.onSlideChangeStart(name, props, state, newState);
+        _fp.handleScroll(verticalRoot, 'scrollTop', to, newState, name);
+      });
     }
   }]);
 
